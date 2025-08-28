@@ -1,0 +1,9 @@
+assist_prompts:
+  - name: baseline_planner
+    prompt: |
+      Given contract features (complexity, workstreams, hours, duration) and role dictionary,
+      propose a staffing mix that fits utilization targets and minimizes cost while meeting scope.
+  - name: variance_explainer
+    prompt: |
+      Explain key drivers of variance between planned and actual hours for a contract,
+      focusing on role mix, ramp curves, and workstream complexity.

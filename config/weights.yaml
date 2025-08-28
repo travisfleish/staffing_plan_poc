@@ -1,0 +1,21 @@
+alpha_complexity: 0.25
+beta_workstreams: 0.12
+role_mix:
+  manager: 0.15
+  senior: 0.5
+  junior: 0.35
+min_team_composition:
+  project:
+    manager: 1
+    senior: 1
+  retainer:
+    manager: 1
+    senior: 1
+    junior: 1
+default_project_type: project
+calibration:
+  ai_confidence: 0.3
+  historical_confidence: 0.7
+  min_similar_contracts: 2
+  similarity_threshold: 0.8
+  fallback_strategy: "conservative"
