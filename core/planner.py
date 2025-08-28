@@ -170,8 +170,8 @@ def generate_staffing_plan(
 		historical_data if historical_data is not None else pd.DataFrame(),
 		ai_confidence=float(cal_cfg.get("ai_confidence", 0.3)),
 		historical_confidence=float(cal_cfg.get("historical_confidence", 0.7)),
-		min_similar_contracts=int(cal_cfg.get("min_similar_contracts", 2)),
-		similarity_threshold=float(cal_cfg.get("similarity_threshold", 0.8)),
+		min_similar_contracts=int(cal_cfg.get("min_similar_contracts", 1)),
+		similarity_threshold=float(cal_cfg.get("similarity_threshold", 0.3)),
 		fallback_strategy=str(cal_cfg.get("fallback_strategy", "conservative")),
 	)
 	baseline_total = max(cal.get("blended_baseline", ai_guess), 0.0)
@@ -180,8 +180,8 @@ def generate_staffing_plan(
 	dyn_mix = _compute_dynamic_role_mix(
 		similar_neighbors,
 		historical_data,
-		similarity_threshold=float(cal_cfg.get("similarity_threshold", 0.8)),
-		min_similar_contracts=int(cal_cfg.get("min_similar_contracts", 2)),
+		similarity_threshold=float(cal_cfg.get("similarity_threshold", 0.3)),
+		min_similar_contracts=int(cal_cfg.get("min_similar_contracts", 1)),
 	)
 	role_hours = _estimate_role_hours_from_total(baseline_total, weights_cfg, mix_override=dyn_mix)
 	plan = _apply_constraints(role_hours, features, roles_cfg, weights_cfg, max_team_size)

@@ -56,15 +56,19 @@ The Staffing Plan Generator POC is an AI-powered application that automatically 
 - **Output**: Ranked list of similar historical contracts
 
 #### 4. **Calibration Engine (`core/calibration.py`)**
-- **Purpose**: Blend AI estimates with historical data
+- **Purpose**: Blend AI estimates with historical data using intelligent contract matching
 - **Strategies**:
   - **Blended**: Combines AI estimate (30%) + Historical baseline (70%)
   - **Fallback**: Uses AI estimate when insufficient historical data
 - **Thresholds**:
-  - Minimum similar contracts: 1
-  - Similarity threshold: 0.3 (more permissive)
+  - Minimum similar contracts: 1 (configurable)
+  - Similarity threshold: 0.3 (configurable, more permissive)
+- **Contract ID Mapping**: Automatically maps SOW IDs (e.g., `[SOW-X-300]`) to contract IDs (e.g., `C-300`)
 - **Business Logic**:
   ```python
+  # Filter contracts by similarity threshold
+  neighbors = similar_contracts[similarity_score >= threshold]
+  
   if sufficient_historical_data and enough_similar_contracts:
       strategy = "blended"
       baseline = ai_confidence * corrected_ai + historical_confidence * historical_baseline
@@ -120,10 +124,11 @@ Contract ID Mapping → Hours Summation → Role Mix Calculation → Baseline Ge
 ```
 
 **Business Rules**:
-- **Contract ID Mapping**: SOW-X-300 → C-300 (hardcoded mapping)
+- **Contract ID Mapping**: Automatic mapping from SOW IDs to contract IDs (e.g., `[SOW-X-300] Delta Airlines Integrated Retainer (C-300)` → `C-300`)
 - **Hours Aggregation**: Sum actual hours per contract per role
 - **Similarity Weighting**: 1/(1 + distance) for historical influence
-- **Minimum Thresholds**: At least 1 similar contract with 0.3 similarity
+- **Minimum Thresholds**: At least 1 similar contract with 0.3 similarity (configurable)
+- **Calibration Strategy**: Intelligent fallback between blended (AI + historical) and fallback (AI only) based on data availability
 
 ### 3. **Staffing Plan Generation**
 
@@ -236,16 +241,25 @@ min_team_composition:
 ```
 
 ### 4. **Calibration Results**
+
+The system provides detailed calibration metadata for transparency and debugging:
+
 ```python
 {
-    "ai_estimate": float,
-    "hist_baseline": float,
-    "corrected_ai": float,
-    "blended_baseline": float,
-    "strategy": "blended|fallback",
-    "role_mix_used": Dict[str, float]
+    "ai_estimate": float,        # Raw AI-generated hours estimate
+    "hist_baseline": float,      # Weighted average from similar contracts
+    "corrected_ai": float,       # AI estimate with bias correction
+    "blended_baseline": float,   # Final calibrated estimate
+    "strategy": "blended|fallback", # Calibration strategy used
+    "role_mix_used": Dict[str, float] # Dynamic role distribution
 }
 ```
+
+**Key Features**:
+- **Automatic Contract ID Mapping**: SOW IDs → Contract IDs (e.g., `[SOW-X-300]` → `C-300`)
+- **Configurable Thresholds**: Similarity threshold and min contracts via `weights.yaml`
+- **Intelligent Fallback**: Blended (AI + historical) vs Fallback (AI only) based on data availability
+- **Confidence Weighting**: Configurable AI (30%) vs Historical (70%) blending
 
 ## Error Handling & Fallbacks
 
@@ -255,8 +269,9 @@ min_team_composition:
 
 ### 2. **Historical Data Issues**
 - **Insufficient Data**: Fallback to AI-only estimates
-- **Contract ID Mismatches**: Hardcoded mapping fallback
+- **Contract ID Mismatches**: Automatic mapping from SOW IDs to contract IDs
 - **Role Mismatches**: Default role mix configuration
+- **Similarity Thresholds**: Configurable fallback when contracts don't meet similarity requirements
 
 ### 3. **Configuration Errors**
 - **Missing Files**: Default configurations

@@ -19,13 +19,33 @@ def get_actual_hours_for_contract(contract_id: str, historical_data: pd.DataFram
 def _weighted_historical_baseline(similar_contracts: pd.DataFrame, historical_data: pd.DataFrame) -> Optional[float]:
 	if similar_contracts is None or similar_contracts.empty or historical_data is None or historical_data.empty:
 		return None
+	
+	# Use the same contract ID mapping as in planner.py
+	HIST_SOW_TO_CONTRACT = {
+		"[SOW-X-300] Delta Airlines Integrated Retainer (C-300)": "C-300",
+		"[SOW-X-301] Global Beverage Brand Integrated Retainer (C-301)": "C-301",
+		"[SOW-X-302] Telecom Co. Integrated Retainer (C-302)": "C-302",
+		"[SOW-X-303] Consumer Electronics Integrated Retainer (C-303)": "C-303",
+		"[SOW-X-304] Financial Services Integrated Retainer (C-304)": "C-304",
+		"[SOW-X-305] Streaming Platform Integrated Retainer (C-305)": "C-305",
+		"[SOW-X-306] National Retailer Integrated Retainer (C-306)": "C-306",
+		"[SOW-X-307] Airline Alliance Integrated Retainer (C-307)": "C-307",
+		"[SOW-X-308] Automotive Brand Integrated Retainer (C-308)": "C-308",
+		"[SOW-X-309] Apparel Brand Integrated Retainer (C-309)": "C-309",
+		"[SOW-X-310] Tech Manufacturer Integrated Retainer (C-310)": "C-310",
+	}
+	
 	usable = []
 	for _, row in similar_contracts.iterrows():
-		cid = str(row.get("id", "")).strip()
+		sow_id = str(row.get("id", "")).strip()
 		dist = float(row.get("distance", 0.0) or 0.0)
-		if not cid:
+		if not sow_id:
 			continue
-		actual = get_actual_hours_for_contract(cid, historical_data)
+		
+		# Extract contract ID from SOW ID
+		contract_id = HIST_SOW_TO_CONTRACT.get(sow_id, sow_id)
+		
+		actual = get_actual_hours_for_contract(contract_id, historical_data)
 		if actual <= 0:
 			continue
 		w = 1.0 / (1.0 + dist)
@@ -50,7 +70,7 @@ def calculate_calibrated_baseline(
 	ai_confidence: float = 0.3,
 	historical_confidence: float = 0.7,
 	min_similar_contracts: int = 2,
-	similarity_threshold: float = 0.8,
+	similarity_threshold: float = 0.3,
 	fallback_strategy: str = "conservative",
 ) -> Dict[str, float]:
 	ai_estimate = float(ai_estimate or 0.0)
@@ -61,7 +81,7 @@ def calculate_calibrated_baseline(
 	baseline_hist = _weighted_historical_baseline(neighbors if not neighbors.empty else similar_contracts, historical_data)
 	bias = calculate_ai_bias_correction(neighbors if not neighbors.empty else similar_contracts, historical_data)
 	corrected_ai = ai_estimate * float(bias)
-	use_hist = baseline_hist is not None and (similar_contracts is not None and len(similar_contracts) >= int(min_similar_contracts))
+	use_hist = baseline_hist is not None and (neighbors is not None and len(neighbors) >= int(min_similar_contracts))
 	if use_hist:
 		ai_w = max(0.0, min(1.0, float(ai_confidence)))
 		h_w = max(0.0, min(1.0, float(historical_confidence)))
