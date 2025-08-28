@@ -38,7 +38,7 @@ def get_configs():
 	return load_configs(Path("config/roles.yaml"), Path("config/weights.yaml"))
 
 @st.cache_resource
-def build_vector_index() -> InMemoryVectorIndex:
+def build_vector_index(embedding_model: str = None) -> InMemoryVectorIndex:
 	idx = InMemoryVectorIndex()
 	# Parse sow_historicals.txt to build index from cross-functional SOWs
 	sow_historicals_path = Path("samples/sow_historicals.txt")
@@ -100,7 +100,9 @@ def load_inputs_text(sow_txt_file, staffing_file, hours_file):
 def main():
 	st.title("Staffing Plan Generator POC - Semantic SOW")
 	roles_cfg, weights_cfg = get_configs()
-	index = build_vector_index()
+	# Get embedding model for cache invalidation
+	embedding_model = os.getenv("OPENAI_EMBED_MODEL", "text-embedding-3-small")
+	index = build_vector_index(embedding_model)
 	sow_txt_file, staffing_file, hours_file, duration_adj, scope_adj, max_team = sidebar_controls()
 
 	sow_text, staffing_df, hours_df = load_inputs_text(sow_txt_file, staffing_file, hours_file)
