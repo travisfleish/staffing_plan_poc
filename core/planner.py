@@ -18,7 +18,8 @@ def _apply_constraints(role_hours: Dict[str, float], features: Dict[str, float],
 	minimums = min_team_by_project_type(project_type, weights_cfg)
 	rows = []
 	duration_months = max(int(math.ceil(features.get("duration_months", 1) or 1)), 1)
-	weeks = max(duration_months * 4, 4)
+	# Convert months to weeks: 1 month = 4.33 weeks (52 weeks / 12 months)
+	weeks = max(int(duration_months * 4.33), 4)
 	for role, hours in role_hours.items():
 		util = get_utilization_target(role, roles_cfg)
 		fte_weeks = hours / (util * 40.0) if util > 0 else 0
@@ -28,7 +29,7 @@ def _apply_constraints(role_hours: Dict[str, float], features: Dict[str, float],
 		seniority_level = "senior" if role in ("creative_director", "designer", "account_manager", "project_manager") else "junior"
 		rows.append({
 			"role": role,
-			"planned_hours": round(hours, 1),
+			"planned_hours": round(hours),  # Round to whole numbers
 			"fte": round(fte_weeks / weeks, 2),
 			"start_week": 1,
 			"end_week": weeks,
@@ -188,7 +189,15 @@ def generate_staffing_plan(
 	plan.insert(0, "contract_id", contract_id)
 	# Attach calibration and role mix debug info
 	cal_debug = dict(cal)
-	cal_debug["role_mix_used"] = dyn_mix if dyn_mix is not None else weights_cfg.get("role_mix")
+	# Round role mix percentages to 2 decimal places for cleaner display
+	if dyn_mix is not None:
+		rounded_mix = {role: round(percentage, 2) for role, percentage in dyn_mix.items()}
+		cal_debug["role_mix_used"] = rounded_mix
+	else:
+		# Round configured role mix as well
+		config_mix = weights_cfg.get("role_mix", {})
+		rounded_config_mix = {role: round(percentage, 2) for role, percentage in config_mix.items()}
+		cal_debug["role_mix_used"] = rounded_config_mix
 	plan._calibration_debug = cal_debug  # type: ignore
 	return plan
 
