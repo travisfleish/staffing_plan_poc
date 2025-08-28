@@ -1,18 +1,17 @@
 default_rate: 200
 rates:
-  junior:
-    junior: 125
-    senior: 150
-  senior:
-    junior: 150
-    senior: 200
-  manager:
-    senior: 250
-    partner: 350
-  partner:
-    partner: 450
+  account_manager: 250
+  project_manager: 250
+  creative_director: 200
+  designer: 200
+  copywriter: 150
+  producer: 150
+  analyst: 150
 utilization_targets:
-  junior: 0.8
-  senior: 0.8
-  manager: 0.75
-  partner: 0.7
+  account_manager: 0.85
+  project_manager: 0.85
+  creative_director: 0.85
+  designer: 0.85
+  copywriter: 0.85
+  producer: 0.85
+  analyst: 0.85

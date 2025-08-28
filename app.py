@@ -19,10 +19,18 @@ DATA_SCHEMAS = {
 }
 
 HIST_SOW_TO_CONTRACT = {
-	"sow_h001_retail_sports.txt": "C-105",
-	"sow_h002_airline_activation.txt": "C-101",
-	"sow_h003_streaming_launch.txt": "C-102",
-	"sow_h004_creative_retainer.txt": "C-103",
+	# Map SOW IDs from sow_historicals.txt to contract IDs
+	"[SOW-X-300] Delta Airlines Integrated Retainer (C-300)": "C-300",
+	"[SOW-X-301] Global Beverage Brand Integrated Retainer (C-301)": "C-301",
+	"[SOW-X-302] Telecom Co. Integrated Retainer (C-302)": "C-302",
+	"[SOW-X-303] Consumer Electronics Integrated Retainer (C-303)": "C-303",
+	"[SOW-X-304] Financial Services Integrated Retainer (C-304)": "C-304",
+	"[SOW-X-305] Streaming Platform Integrated Retainer (C-305)": "C-305",
+	"[SOW-X-306] National Retailer Integrated Retainer (C-306)": "C-306",
+	"[SOW-X-307] Airline Alliance Integrated Retainer (C-307)": "C-307",
+	"[SOW-X-308] Automotive Brand Integrated Retainer (C-308)": "C-308",
+	"[SOW-X-309] Apparel Brand Integrated Retainer (C-309)": "C-309",
+	"[SOW-X-310] Tech Manufacturer Integrated Retainer (C-310)": "C-310",
 }
 
 @st.cache_data
@@ -32,12 +40,35 @@ def get_configs():
 @st.cache_resource
 def build_vector_index() -> InMemoryVectorIndex:
 	idx = InMemoryVectorIndex()
-	sows_dir = Path("samples/sows")
-	if sows_dir.exists():
-		for p in sorted(sows_dir.glob("*.txt")):
-			text = p.read_text(encoding="utf-8")
-			emb = embed_text(text)
-			idx.add(p.name, text, emb)
+	# Parse sow_historicals.txt to build index from cross-functional SOWs
+	sow_historicals_path = Path("samples/sow_historicals.txt")
+	if sow_historicals_path.exists():
+		content = sow_historicals_path.read_text(encoding="utf-8")
+		# Split by SOW entries (lines starting with [SOW-)
+		sow_entries = []
+		current_entry = []
+		current_id = None
+		
+		for line in content.split('\n'):
+			if line.strip().startswith('[SOW-'):
+				# Save previous entry if exists
+				if current_entry and current_id:
+					sow_entries.append((current_id, '\n'.join(current_entry)))
+				# Start new entry
+				current_id = line.strip()
+				current_entry = [line]
+			elif line.strip() and current_entry:
+				current_entry.append(line)
+		
+		# Add the last entry
+		if current_entry and current_id:
+			sow_entries.append((current_id, '\n'.join(current_entry)))
+		
+		# Index each SOW entry
+		for sow_id, sow_text in sow_entries:
+			emb = embed_text(sow_text)
+			idx.add(sow_id, sow_text, emb)
+	
 	return idx
 
 
@@ -114,7 +145,7 @@ def main():
 		)
 
 		st.markdown("### Recommended Staffing Plan")
-		st.dataframe(rec_plan, use_container_width=True)
+		st.dataframe(rec_plan, width='stretch')
 
 		with st.expander("Calibration details"):
 			cal = getattr(rec_plan, "_calibration_debug", {})
@@ -122,7 +153,7 @@ def main():
 
 		comparison = compare_plan_vs_actual(rec_plan if not mapped_contract_id else rec_plan.assign(contract_id=mapped_contract_id), hours_df)
 		st.markdown("### Variance Analysis (Plan vs. Actuals)")
-		st.dataframe(comparison, use_container_width=True)
+		st.dataframe(comparison, width='stretch')
 
 		st.download_button(
 			label="Export Plan CSV",

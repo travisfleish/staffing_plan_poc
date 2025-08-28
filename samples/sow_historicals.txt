@@ -1,17 +1,45 @@
-# HISTORICAL SOWS
+# CROSS-FUNCTIONAL HISTORICAL SOWS (Year-long Retainers)
 
-[SOW-H001] Retail Sports Partnership Campaign
-Scope: Creative concepting, social content, and game-day OOH. Duration 4 months.
-Deliverables: 2x hero videos, 30+ social assets, stadium LED strips.
+[SOW-X-300] Delta Airlines Integrated Retainer (C-300)
+Scope: Cross-functional support spanning Sponsorship Strategy, Creative (concepting, design, copy), Experience (activations, production), Client Services (governance), Data (reporting), and Operations (workflow, enablement). Duration 12 months.
+Deliverables: Quarterly integrated plans, creative toolkits, activation playbooks, content packages, performance dashboards, and executive reports.
 
-[SOW-H002] Airline Sports Sponsorship Activation
-Scope: Experiential pop-ups at airport terminals and fan zones; co-branded content.
-Duration 6 months. Deliverables: 5 events, 20+ social pieces, recap video.
+[SOW-X-301] Global Beverage Brand Integrated Retainer (C-301)
+Scope: Creative campaign cycles, partnership strategy, social/content production, measurement, and cross-team program management across markets. Duration 12 months.
+Deliverables: Quarterly creative kits, sponsorship roadmaps, content calendars, KPI dashboards, governance cadences.
 
-[SOW-H003] Home Improvement Seasonal Campaign
-Scope: Broadcast + digital campaign aligned to seasonal sports.
-Duration 5 months. Deliverables: 3 TV spots, 40 social assets, creative toolkit.
+[SOW-X-302] Telecom Co. Integrated Retainer (C-302)
+Scope: Always-on creative, partner activation, owned/digital content, data insights, experimentation, and program ops. Duration 12 months.
+Deliverables: Quarterly integrated plans, content drops, activation toolkits, BI dashboards, experimentation readouts.
 
-[SOW-H004] Entertainment Streaming Launch Push
-Scope: Social-first campaign with influencer integrations and weekly cadence.
-Duration 3 months. Deliverables: 25 short-form videos, paid social toolkit.
+[SOW-X-303] Consumer Electronics Integrated Retainer (C-303)
+Scope: Cross-channel creative, sports sponsorship alignment, experiential content capture, client services, and operational enablement. Duration 12 months.
+Deliverables: Launch kits, content packages, activation guides, governance artifacts, training materials.
+
+[SOW-X-304] Financial Services Integrated Retainer (C-304)
+Scope: Creative cycles, sponsorship portfolio support, data-driven optimization, and integrated program management. Duration 12 months.
+Deliverables: Quarterly strategy and content kits, partner activation roadmaps, reporting and insights.
+
+[SOW-X-305] Streaming Platform Integrated Retainer (C-305)
+Scope: Always-on creative and social, co-marketing sponsorships, event activations, client services, and analytics. Duration 12 months.
+Deliverables: Seasonal creative kits, event playbooks, cadence docs, and KPI reporting.
+
+[SOW-X-306] National Retailer Integrated Retainer (C-306)
+Scope: Creative production, in-store/event activations, sports partnerships, data insights, and ops/process improvements. Duration 12 months.
+Deliverables: Quarterly plans, creative kits, activation guides, dashboards, enablement.
+
+[SOW-X-307] Airline Alliance Integrated Retainer (C-307)
+Scope: Creative/content, sponsorship activation, experience ops, client governance, and performance analytics. Duration 12 months.
+Deliverables: Cross-functional roadmaps, content calendars, activation artifacts, KPI dashboards.
+
+[SOW-X-308] Automotive Brand Integrated Retainer (C-308)
+Scope: Integrated creative cycles, motorsport sponsorships, experiential production, PMO/CS support, data and testing. Duration 12 months.
+Deliverables: Quarterly creative deliverables, activation plans, program governance, experimentation summaries.
+
+[SOW-X-309] Apparel Brand Integrated Retainer (C-309)
+Scope: Creative and social content, athlete/league sponsorship strategy, event activations, and analytics. Duration 12 months.
+Deliverables: Seasonal content kits, sponsorship playbooks, activation runbooks, reporting.
+
+[SOW-X-310] Tech Manufacturer Integrated Retainer (C-310)
+Scope: Cross-regional creative production, partner activations, client services/governance, and insights/enablement. Duration 12 months.
+Deliverables: Quarterly integrated plans, creative kits, activation guides, dashboards, and training.

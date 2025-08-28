@@ -3,7 +3,8 @@ from pathlib import Path
 from typing import Dict, Any
 import yaml
 
-ROLE_HIERARCHY = ["junior", "senior", "manager", "partner"]
+# Updated to use specific role names
+ROLE_HIERARCHY = ["analyst", "producer", "copywriter", "designer", "creative_director", "project_manager", "account_manager"]
 
 
 def load_yaml(path: Path) -> Dict[str, Any]:
@@ -26,4 +27,4 @@ def get_rate(role: str, seniority: str, roles_cfg: Dict[str, Any]) -> float:
 
 
 def min_team_by_project_type(project_type: str, weights_cfg: Dict[str, Any]) -> Dict[str, int]:
-	return weights_cfg.get("min_team_composition", {}).get(project_type.lower(), {"manager": 1, "senior": 1})
+	return weights_cfg.get("min_team_composition", {}).get(project_type.lower(), {"account_manager": 1, "designer": 1})

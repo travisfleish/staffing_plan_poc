@@ -24,7 +24,14 @@ def extract_contract_features(sow_df: pd.DataFrame) -> Dict[str, float]:
 def features_from_ai(ai_summary: Dict[str, Any]) -> Dict[str, float]:
 	complexity = {"low": 1, "medium": 2, "high": 3}.get(str(ai_summary.get("complexity_level", "medium")).lower(), 2)
 	workstreams = int(ai_summary.get("workstream_count", 1) or 1)
-	est_hours = float(ai_summary.get("estimated_total_hours", 0) or 0)
+	
+	# Safely convert estimated_total_hours to float, handling non-numeric values
+	est_hours_raw = ai_summary.get("estimated_total_hours", 0)
+	try:
+		est_hours = float(est_hours_raw) if est_hours_raw != "TBD" else 0.0
+	except (ValueError, TypeError):
+		est_hours = 0.0
+	
 	duration = float(ai_summary.get("duration_months", 3) or 3)
 	return {
 		"complexity_mean": float(complexity),
