@@ -43,31 +43,39 @@ def build_vector_index() -> InMemoryVectorIndex:
 	# Parse sow_historicals.txt to build index from cross-functional SOWs
 	sow_historicals_path = Path("samples/sow_historicals.txt")
 	if sow_historicals_path.exists():
-		content = sow_historicals_path.read_text(encoding="utf-8")
-		# Split by SOW entries (lines starting with [SOW-)
-		sow_entries = []
-		current_entry = []
-		current_id = None
-		
-		for line in content.split('\n'):
-			if line.strip().startswith('[SOW-'):
-				# Save previous entry if exists
-				if current_entry and current_id:
-					sow_entries.append((current_id, '\n'.join(current_entry)))
-				# Start new entry
-				current_id = line.strip()
-				current_entry = [line]
-			elif line.strip() and current_entry:
-				current_entry.append(line)
-		
-		# Add the last entry
-		if current_entry and current_id:
-			sow_entries.append((current_id, '\n'.join(current_entry)))
-		
-		# Index each SOW entry
-		for sow_id, sow_text in sow_entries:
-			emb = embed_text(sow_text)
-			idx.add(sow_id, sow_text, emb)
+		try:
+			content = sow_historicals_path.read_text(encoding="utf-8")
+			# Split by SOW entries (lines starting with [SOW-)
+			sow_entries = []
+			current_entry = []
+			current_id = None
+			
+			for line in content.split('\n'):
+				if line.strip().startswith('[SOW-'):
+					# Save previous entry if exists
+					if current_entry and current_id:
+						sow_entries.append((current_id, '\n'.join(current_entry)))
+					# Start new entry
+					current_id = line.strip()
+					current_entry = [line]
+				elif line.strip() and current_entry:
+					current_entry.append(line)
+			
+			# Add the last entry
+			if current_entry and current_id:
+				sow_entries.append((current_id, '\n'.join(current_entry)))
+			
+			# Index each SOW entry
+			for sow_id, sow_text in sow_entries:
+				try:
+					emb = embed_text(sow_text)
+					if emb and len(emb) > 0:
+						idx.add(sow_id, sow_text, emb)
+				except Exception as e:
+					print(f"Failed to embed SOW {sow_id}: {e}")
+					continue
+		except Exception as e:
+			print(f"Failed to build vector index: {e}")
 	
 	return idx
 
@@ -101,6 +109,11 @@ def main():
 	st.title("Staffing Plan Generator POC - Semantic SOW")
 	roles_cfg, weights_cfg = get_configs()
 	index = build_vector_index()
+	
+	# Show index status
+	if not index.items or len(index.items) == 0:
+		st.info("⚠️ No historical SOW data loaded. The app will use AI-only analysis.")
+	
 	sow_txt_file, staffing_file, hours_file, duration_adj, scope_adj, max_team = sidebar_controls()
 
 	sow_text, staffing_df, hours_df = load_inputs_text(sow_txt_file, staffing_file, hours_file)
@@ -110,7 +123,19 @@ def main():
 	analyze = st.button("Analyze SOW and Generate Plan", type="primary")
 	if analyze:
 		ai_summary = analyze_sow_text(sow_text)
-		neighbors = index.search(embed_text(sow_text), top_k=5) if index.items else []
+		
+		# Safe vector search with error handling
+		neighbors = []
+		try:
+			if index.items and len(index.items) > 0:
+				# Only search if we have historical data
+				embedding = embed_text(sow_text)
+				if embedding and len(embedding) > 0:
+					neighbors = index.search(embedding, top_k=5)
+		except Exception as e:
+			st.warning(f"Vector search failed: {str(e)}. Using AI-only analysis.")
+			neighbors = []
+		
 		features = features_from_ai(ai_summary)
 		neighbors_df = pd.DataFrame(neighbors) if neighbors else pd.DataFrame()
 

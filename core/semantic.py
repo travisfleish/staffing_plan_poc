@@ -119,7 +119,13 @@ def embed_text_hybrid(text: str) -> List[float]:
 
 def embed_text(text: str) -> List[float]:
 	"""Enhanced embedding function using hybrid approach."""
-	return embed_text_hybrid(text)
+	try:
+		if not text or len(text.strip()) == 0:
+			return []
+		return embed_text_hybrid(text)
+	except Exception as e:
+		print(f"Embedding failed: {e}")
+		return []
 
 
 def analyze_sow_text(text: str) -> Dict[str, Any]:
